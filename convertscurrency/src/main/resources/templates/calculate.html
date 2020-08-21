@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">`
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>-->
+    <title>Converts-currency </title>
+    <style>
+        .btn {
+            width: 90px;
+        }
+
+        .fieldBlock {
+            display: inline-block;
+            width: 170px;
+            margin: 10px;
+            margin-left: 0px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3>Converts-currency</h3>
+    <form th:action="@{/currency}" method='GET'>
+        <div class="form-group">
+            <div class="fieldBlock">
+                <label for="type_from">Form</label>
+                <select class="form-control" id="type_from" name="from">
+                    <option th:each="currencyData : ${currencyDatas}"
+                            th:value="${currencyData.type}"
+                            th:text="${currencyData.type}"
+                            th:selected="${currencyData.type} == ${type}">
+                    </option>
+                </select>
+            </div>
+            <div class="btn btn-light" id="button" data-role="button">Switch</div>
+            <div class="fieldBlock">
+                <label>To</label>
+                <select class="form-control" id="type_to" name="to">
+                    <option th:each="currencyData : ${currencyDatas}"
+                            th:value="${currencyData.type}"
+                            th:text="${currencyData.type}"
+                            th:selected="${currencyData.type} == ${type1}">
+                    </option>
+                </select>
+            </div>
+            <div class="fieldBlock">
+                <label>Amount</label>
+                <input class="form-control" type="text" name="currencyAmount" th:value="${fieldValue}"/>
+            </div>
+            <button class="btn btn-warning" type="submit">Calculate</button>
+        </div>
+    </form>
+
+    <p th:text="${type}"></p>
+    <p th:text="${type1}"></p>
+    <p th:text="${sum}"></p>
+</div>
+</body>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function () {
+        $("#button").click(function () {
+            $('#type_from' && '#type_to').change(function () {
+                var value_f = ($('#type_from :selected').val());
+                var value_t = ($('#type_to :selected').val());
+                $('#type_from').val(value_t);
+                $('#type_to').val(value_f)
+            }).change();
+        });
+    });
+    /*]]>*/
+</script>
+</html>
