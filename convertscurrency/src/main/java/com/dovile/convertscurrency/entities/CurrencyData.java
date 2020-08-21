@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 /**
  * @author Dovile Barkauskaite <barkauskaite.dovile@gmail.com>
  */
-
 @Entity
 @Table(name = "currency_data")
 @NamedQuery(name = "CurrencyData.findByType", query = "SELECT c FROM CurrencyData c WHERE c.type = :type")
