@@ -1,26 +1,25 @@
 package com.dovile.convertscurrency.services;
 
+import com.dovile.convertscurrency.entities.ConfigDate;
 import com.dovile.convertscurrency.entities.CurrencyData;
+import com.dovile.convertscurrency.http.CurrentFxRates;
+import com.dovile.convertscurrency.http.GetCurrentFxRatesFactory;
+import com.dovile.convertscurrency.repositories.ConfigDateRepository;
 import com.dovile.convertscurrency.repositories.CurrencyDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 /**
  * @author barkauskaite.dovile@gmail.com
@@ -28,71 +27,104 @@ import java.util.List;
 @Service
 public class CurrencyDataServiceImpl implements CurrencyDataService {
 
+    private final static Logger logger = Logger.getLogger(CurrencyDataServiceImpl.class.getName());
+
     @Autowired
     private CurrencyDataRepository currencyDataRepository;
 
+    @Autowired
+    private ConfigDateRepository configDateRepository;
+
     public List<CurrencyData> getAllCurrencyData() {
+        logger.info("Get all type and rate of Currency from database");
         return currencyDataRepository.findAll();
     }
 
-    public void insertDataBase() {
-        if (currencyDataRepository.findAll() != null) {
-            currencyDataRepository.deleteAll();
-        }
+    @Transactional
+    public void checkData() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        ConfigDate configDate = null;
         try {
-            String url = "https://www.lb.lt/webservices/FxRates/FxRates.asmx/getCurrentFxRates?tp=EU";
-            URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.addRequestProperty("User-Agent", "Mozilla/4.76");
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-            StringBuffer response = new StringBuffer();
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            configDate = configDateRepository.findById(1).get();
+            if (sdf.format(configDate.getDate()).equals(sdf.format(new Date()))) {
+                logger.info("Data have been builded before");
+            } else {
+                logger.info("Update Data");
+                configDate.setDate(new Date());
+                configDateRepository.save(configDate);
+                updateDataBase();
             }
-            in.close();
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    .parse(new InputSource(new StringReader(response.toString())));
+        } catch (NoSuchElementException e) {
+            insertDataBase();
+            configDate = new ConfigDate();
+            configDate.setDate(new Date());
+            configDateRepository.save(configDate);
+        }
+    }
 
-            NodeList errNodes = doc.getElementsByTagName("FxRate");
+    @Transactional
+    @Scheduled(fixedRate = 3600000)
+    public void insertDataBase() {
+        GetCurrentFxRatesFactory getFxRatesFactory = new GetCurrentFxRatesFactory();
+        CurrentFxRates currentFxRates = getFxRatesFactory.getCurrentFxRates();
+        Map<String, String> data = currentFxRates.getData();
 
-            for (int i = 0; i < errNodes.getLength(); i++) {
-                Element err = (Element) errNodes.item(i);
-                for (int j = 0; j < err.getElementsByTagName("Ccy").getLength(); j++) {
-                    try {
-                        CurrencyData currencyData = new CurrencyData();
-                        currencyData.setType(err.getElementsByTagName("Ccy").item(j).getTextContent());
-                        currencyData.setRate(new BigDecimal(err.getElementsByTagName("Amt").item(j).getTextContent()));
-                        currencyDataRepository.save(currencyData);
-                    } catch (DataIntegrityViolationException e) {
-                        continue;
-                    }
-                }
+        for (Map.Entry<String, String> cData : data.entrySet()) {
+            CurrencyData currencyData = new CurrencyData();
+            currencyData.setType(cData.getKey());
+            currencyData.setRate(new BigDecimal(cData.getValue()));
+            currencyDataRepository.save(currencyData);
+        }
+    }
+
+    @Transactional
+    @Scheduled(fixedRate = 3600000)
+    public void updateDataBase() {
+        GetCurrentFxRatesFactory getFxRatesFactory = new GetCurrentFxRatesFactory();
+        CurrentFxRates currentFxRates = getFxRatesFactory.getCurrentFxRates();
+        Map<String, String> data = currentFxRates.getData();
+        CurrencyData currencyData = null;
+        for (Map.Entry<String, String> cData : data.entrySet()) {
+            try {
+                currencyData = currencyDataRepository.findByType(cData.getKey());
+                currencyData.setRate(new BigDecimal(cData.getValue()));
+                currencyDataRepository.save(currencyData);
+            } catch (NullPointerException e) {
+                logger.info("Find new rate type");
+                currencyData = new CurrencyData();
+                currencyData.setType(cData.getKey());
+                currencyData.setRate(new BigDecimal(cData.getValue()));
+                currencyDataRepository.save(currencyData);
             }
-        } catch (Exception e) {
-            System.out.println(e);
         }
     }
 
     public BigDecimal calculateCurrent(String type1, String type2, String value) {
         BigDecimal amount = null;
+
         if (value != null) {
-            if (type1.equals("EUR")) {
-                amount = currencyDataRepository.findByType(type2).getRate()
-                        .multiply(new BigDecimal(value));
-            } else if (type2.equals("EUR")) {
-                amount = new BigDecimal(value)
-                        .divide(currencyDataRepository.findByType(type1).getRate(), 6, RoundingMode.CEILING);
-                System.out.println(currencyDataRepository.findByType(type1).getRate());
-            } else {
-                amount = new BigDecimal(value)
-                        .divide(currencyDataRepository.findByType(type1).getRate(), 6, RoundingMode.CEILING)
-                        .multiply(currencyDataRepository.findByType(type2).getRate());
+            try {
+                BigDecimal valueCurrency = new BigDecimal(value);
+                logger.info("Get amount of currency");
+                if (type1.equals("EUR")) {
+                    amount = currencyDataRepository.findByType(type2).getRate()
+                            .multiply(valueCurrency);
+                } else if (type2.equals("EUR")) {
+                    amount = valueCurrency
+                            .divide(currencyDataRepository.findByType(type1).getRate(), 6, RoundingMode.CEILING);
+                    System.out.println(currencyDataRepository.findByType(type1).getRate());
+                } else {
+                    amount = valueCurrency
+                            .divide(currencyDataRepository.findByType(type1).getRate(), 6, RoundingMode.CEILING)
+                            .multiply(currencyDataRepository.findByType(type2).getRate());
+                }
+            } catch (NumberFormatException|NullPointerException e){
+                logger.severe("Client try to brake page: " + e.getMessage());
+                    return null;
             }
         }
+        logger.warning("Amount is null");
         return amount;
     }
-
 }
 

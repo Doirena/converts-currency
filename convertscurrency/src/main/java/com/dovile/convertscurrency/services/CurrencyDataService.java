@@ -10,10 +10,14 @@ import java.util.List;
  */
 public interface CurrencyDataService {
     /**
-     *
      * @return Currency Data
      */
     List<CurrencyData> getAllCurrencyData();
+
+    /**
+     * action for data, if it is empty then add, if need update data per date
+     */
+    void checkData();
 
     /**
      * parse data from xml file to dataBase
@@ -21,7 +25,11 @@ public interface CurrencyDataService {
     void insertDataBase();
 
     /**
-     *
+     * update data from xml file it is need
+     */
+    void updateDataBase();
+
+    /**
      * @param type1
      * @param type2
      * @param value
