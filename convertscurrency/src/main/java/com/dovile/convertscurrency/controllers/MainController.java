@@ -1,6 +1,5 @@
 package com.dovile.convertscurrency.controllers;
 
-import com.dovile.convertscurrency.entities.CurrencyData;
 import com.dovile.convertscurrency.services.ClientActionService;
 import com.dovile.convertscurrency.services.CurrencyDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import java.math.BigDecimal;
-import java.util.List;
 
+/**
+ * @author barkauskaite.dovile@gmail.com
+ */
 @Controller
 @RequestMapping("/currency")
 public class MainController {
@@ -25,26 +25,26 @@ public class MainController {
     private ClientActionService clientActionService;
 
     @GetMapping
-    public String getCal(@RequestParam (value = "from", required = false) String from,
-                         @RequestParam (value = "to", required = false) String to,
-                         @RequestParam (name = "currencyAmount", required = false) String currencyAmount,
-                         Model model){
+    public String getCal(@RequestParam(value = "from", required = false) String from,
+                         @RequestParam(value = "to", required = false) String to,
+                         @RequestParam(name = "currencyAmount", required = false) String currencyAmount,
+                         Model model) {
 
-        String fieldValue = "1";
-        if (currencyAmount != null){
-            fieldValue = currencyAmount;
-        }
+        currencyDataService.checkData();
 
-        List<CurrencyData> currencyDatas = currencyDataService.getAllCurrencyData();
-        model.addAttribute("currencyDatas", currencyDatas);
+        model.addAttribute("currencyDatas", currencyDataService.getAllCurrencyData());
         BigDecimal sum = currencyDataService.calculateCurrent(from, to, currencyAmount);
-        if (sum !=null){
+        if (sum != null) {
             clientActionService.saveClientAction(from, to, currencyAmount, sum);
+        } else {
+            currencyAmount = "1";
+            from = null;
+            to = null;
         }
         model.addAttribute("type", from);
-        model.addAttribute("type1",to);
+        model.addAttribute("type1", to);
         model.addAttribute("sum", sum);
-        model.addAttribute("fieldValue", fieldValue);
+        model.addAttribute("fieldValue", currencyAmount);
         return "calculate";
     }
 }
