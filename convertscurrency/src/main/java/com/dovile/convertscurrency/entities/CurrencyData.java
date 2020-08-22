@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 @NamedQuery(name = "CurrencyData.findByType", query = "SELECT c FROM CurrencyData c WHERE c.type = :type")
 public class CurrencyData implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
