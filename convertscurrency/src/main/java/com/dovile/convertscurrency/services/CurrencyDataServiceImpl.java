@@ -29,6 +29,9 @@ public class CurrencyDataServiceImpl implements CurrencyDataService {
 
     private final static Logger logger = Logger.getLogger(CurrencyDataServiceImpl.class.getName());
 
+    //TODO Change this, it is not correct, it is hardcode
+    private static Integer id = 1;
+
     @Autowired
     private CurrencyDataRepository currencyDataRepository;
 
@@ -45,14 +48,14 @@ public class CurrencyDataServiceImpl implements CurrencyDataService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ConfigDate configDate = null;
         try {
-            configDate = configDateRepository.findById(1).get();
+            configDate = configDateRepository.findById(id).get();
             if (sdf.format(configDate.getDate()).equals(sdf.format(new Date()))) {
                 logger.info("Data have been builded before");
             } else {
                 logger.info("Update Data");
+                updateDataBase();
                 configDate.setDate(new Date());
                 configDateRepository.save(configDate);
-                updateDataBase();
             }
         } catch (NoSuchElementException e) {
             insertDataBase();
@@ -63,10 +66,8 @@ public class CurrencyDataServiceImpl implements CurrencyDataService {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 3600000)
     public void insertDataBase() {
-        GetCurrentFxRatesFactory getFxRatesFactory = new GetCurrentFxRatesFactory();
-        CurrentFxRates currentFxRates = getFxRatesFactory.getCurrentFxRates();
+        CurrentFxRates currentFxRates = new GetCurrentFxRatesFactory().getCurrentFxRates();
         Map<String, String> data = currentFxRates.getData();
 
         for (Map.Entry<String, String> cData : data.entrySet()) {
@@ -80,8 +81,7 @@ public class CurrencyDataServiceImpl implements CurrencyDataService {
     @Transactional
     @Scheduled(fixedRate = 3600000)
     public void updateDataBase() {
-        GetCurrentFxRatesFactory getFxRatesFactory = new GetCurrentFxRatesFactory();
-        CurrentFxRates currentFxRates = getFxRatesFactory.getCurrentFxRates();
+        CurrentFxRates currentFxRates = new GetCurrentFxRatesFactory().getCurrentFxRates();
         Map<String, String> data = currentFxRates.getData();
         CurrencyData currencyData = null;
         for (Map.Entry<String, String> cData : data.entrySet()) {
@@ -90,7 +90,7 @@ public class CurrencyDataServiceImpl implements CurrencyDataService {
                 currencyData.setRate(new BigDecimal(cData.getValue()));
                 currencyDataRepository.save(currencyData);
             } catch (NullPointerException e) {
-                logger.info("Find new rate type");
+                logger.warning("Find new rate type");
                 currencyData = new CurrencyData();
                 currencyData.setType(cData.getKey());
                 currencyData.setRate(new BigDecimal(cData.getValue()));
