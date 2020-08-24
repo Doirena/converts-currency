@@ -44,4 +44,13 @@ public class ClientAction implements Serializable {
     public void setAction(String action) {
         this.action = action;
     }
+
+    @Override
+    public String toString() {
+        return "ClientAction{" +
+                "id=" + id +
+                ", action='" + action + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
