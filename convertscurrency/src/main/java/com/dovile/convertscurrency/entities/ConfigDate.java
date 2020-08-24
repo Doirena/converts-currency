@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "config_date")
-public class ConfigDate implements Serializable {
+public class ConfigDate{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,11 @@ public class ConfigDate implements Serializable {
     private Date date;
 
     public ConfigDate() {
+    }
+
+    public ConfigDate(Integer id, Date date) {
+        this.id = id;
+        this.date = date;
     }
 
     public Date getDate() {
