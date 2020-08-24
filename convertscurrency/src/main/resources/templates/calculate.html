@@ -7,11 +7,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>-->
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
     <title>Converts-currency </title>
     <style>
         .btn {
-            width: 90px;
+            margin-bottom: 7px;
+            margin-right: 5px;
         }
 
         .fieldBlock {
@@ -21,6 +22,11 @@
             margin-left: 0px;
         }
 
+        .result {
+            display: inline-block;
+            width: 80%;
+            margin-left: 20%;
+        }
     </style>
 </head>
 <body>
@@ -38,42 +44,43 @@
                     </option>
                 </select>
             </div>
-            <div class="btn btn-light" id="button" data-role="button">Switch</div>
+            <div class="btn btn-light" id="button" data-role="button"><i class='fas fa-exchange-alt'></i></div>
             <div class="fieldBlock">
                 <label>To</label>
                 <select class="form-control" id="type_to" name="to">
                     <option th:each="currencyData : ${currencyDatas}"
                             th:value="${currencyData.type}"
-                            th:text="${currencyData.type}"
+                            th:text="${currencyData.type+''+currencyData.type}"
                             th:selected="${currencyData.type} == ${type1}">
                     </option>
                 </select>
             </div>
             <div class="fieldBlock">
                 <label>Amount</label>
-                <input class="form-control" type="text" name="currencyAmount" th:value="${fieldValue}"/>
+                <input class="form-control" type="text" name="currencyAmount" th:value="${fieldValue}"
+                       onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null :
+                       (event.charCode >= 46 && event.charCode <= 46) ||
+                        (event.charCode >= 48 && event.charCode <= 57)"/>
             </div>
             <button class="btn btn-warning" type="submit">Calculate</button>
         </div>
     </form>
 
-    <p th:text="${type}"></p>
-    <p th:text="${type1}"></p>
-    <p th:text="${sum}"></p>
+    <div class="result">
+        <p th:text="${type != null}? ${fromValue+' '+type+' =' }:''"></p>
+        <b th:text="${sum != null}? ${sum}:''"/>
+        <span th:text="${type1}"/>
+    </div>
 </div>
 </body>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    $(document).ready(function () {
-        $("#button").click(function () {
-            $('#type_from' && '#type_to').change(function () {
-                var value_f = ($('#type_from :selected').val());
-                var value_t = ($('#type_to :selected').val());
-                $('#type_from').val(value_t);
-                $('#type_to').val(value_f)
-            }).change();
-        });
+    $("#button").click(function () {
+        var value_f = ($('#type_from :selected').val());
+        var value_t = ($('#type_to :selected').val());
+        $('#type_from').val(value_t);
+        $('#type_to').val(value_f)
     });
     /*]]>*/
 </script>
