@@ -31,7 +31,6 @@ public class MainController {
                          Model model) {
 
         currencyDataService.checkData();
-
         model.addAttribute("currencyDatas", currencyDataService.getAllCurrencyData());
         BigDecimal sum = currencyDataService.calculateCurrent(from, to, currencyAmount);
         if (sum != null) {
@@ -42,6 +41,7 @@ public class MainController {
             to = null;
         }
         model.addAttribute("type", from);
+        model.addAttribute("fromValue", currencyAmount);
         model.addAttribute("type1", to);
         model.addAttribute("sum", sum);
         model.addAttribute("fieldValue", currencyAmount);
