@@ -4,7 +4,6 @@ package com.dovile.convertscurrency.entities;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "currency_data")
 @NamedQuery(name = "CurrencyData.findByType", query = "SELECT c FROM CurrencyData c WHERE c.type = :type")
-public class CurrencyData implements Serializable {
+public class CurrencyData{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
