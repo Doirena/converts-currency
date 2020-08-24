@@ -25,12 +25,4 @@ public class ClientActionServiceImpl implements ClientActionService {
         clientAction.setAction("From " + from + " to " + to + " change " + currencyAmount + " GET " + sum);
         clientActionRepository.save(clientAction);
     }
-
-    //delet this method, just for sure it
-    public ClientAction saveEEE(String from, String to, String currencyAmount, BigDecimal sum) {
-//        logger.info("Create Client action");
-        ClientAction clientAction = new ClientAction();
-        clientAction.setAction("From " + from + " to " + to + " change " + currencyAmount + " GET " + sum);
-        return clientActionRepository.save(clientAction);
-    }
 }
