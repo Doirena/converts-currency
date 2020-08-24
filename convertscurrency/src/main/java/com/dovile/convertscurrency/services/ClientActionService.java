@@ -12,7 +12,7 @@ public interface ClientActionService {
     * @param to
     * @param currencyAmount
     * @param sum
-    * save Client action
+    * save Client action, used {@link com.dovile.convertscurrency.repositories.ClientActionRepository}
     */
    public void saveClientAction(String from, String to, String currencyAmount, BigDecimal sum);
 }
