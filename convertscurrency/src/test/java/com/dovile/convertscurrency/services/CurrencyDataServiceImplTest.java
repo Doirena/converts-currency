@@ -15,7 +15,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -50,34 +49,16 @@ public class CurrencyDataServiceImplTest {
         assertEquals(currencyDataList.get(2).getType(), exCurrencyDataList.get(2).getType());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void checkData() {
-        ConfigDate configDate = new ConfigDate(null, new Date());
-        Integer id =1;
-       // when(configDateRepository.findById(id).get()).thenThrow(NoSuchElementException.class);
-        //when(configDateRepository.save(configDate)).thenReturn(configDate);
-////                .then(configDateRepository.save(configDate))
-//                .thenReturn(Optional.of(configDate));
-//        doThrow(new NoSuchElementException ()).when(configDateRepository).save(configDate);
-//        when(configDateRepository.save(configDate)).thenReturn(configDate);
-//        given(configDateRepository.save(configDate)).willAnswer(invocation -> invocation.getArgument(0));
-
-        doThrow(NoSuchElementException.class)
-                .when(configDateRepository)
-                .findById(id).get();
-//        when(configDateRepository.save(configDate)).thenReturn(configDate);
-        given(configDateRepository.save(configDate)).willAnswer(invocation -> invocation.getArgument(0));
         currencyDataServiceImpl.checkData();
-        verify(configDateRepository, times(10)).save(configDate);
-        assertEquals(new Date(), configDate.getDate());
+        verify(configDateRepository, times(1)).save(any(ConfigDate.class));
     }
 
     @Test
     public void insertDataBase() {
-    }
-
-    @Test
-    public void updateDataBase() {
+        currencyDataServiceImpl.insertDataBase();
+        verify(currencyDataRepository, times(88)).save(any(CurrencyData.class));
     }
 
     @Test
