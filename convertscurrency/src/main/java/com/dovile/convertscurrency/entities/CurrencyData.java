@@ -29,6 +29,12 @@ public class CurrencyData implements Serializable {
     public CurrencyData() {
     }
 
+    public CurrencyData(Integer id, String type, BigDecimal rate) {
+        this.id = id;
+        this.type = type;
+        this.rate = rate;
+    }
+
     public String getType() {
         return type;
     }
