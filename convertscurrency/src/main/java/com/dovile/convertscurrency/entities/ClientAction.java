@@ -4,8 +4,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,14 +12,13 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "client_action")
-public class ClientAction implements Serializable {
+public class ClientAction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull
-    @Size(min = 1, max = 255)
     private String action;
 
     @Column(name = "created_at")
@@ -37,6 +34,10 @@ public class ClientAction implements Serializable {
         this.action = action;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getAction() {
         return action;
     }
@@ -46,11 +47,21 @@ public class ClientAction implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "ClientAction{" +
-                "id=" + id +
-                ", action='" + action + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+    public boolean equals(Object object) {
+//         TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof ClientAction)) {
+            return false;
+        }
+        ClientAction other = (ClientAction) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
+
+    @Override
+    public String toString() {
+        return  id + " "+action;
+    }
+
 }
