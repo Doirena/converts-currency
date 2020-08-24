@@ -15,17 +15,20 @@ public interface CurrencyDataService {
     List<CurrencyData> getAllCurrencyData();
 
     /**
-     * action for data, if it is empty then add, if need update data per date
+     * action for data
+     * {@link com.dovile.convertscurrency.repositories.ConfigDateRepository} if date.equal new Date() continue
+     * else will be update ConfigDate date and update database
      */
     void checkData();
 
     /**
-     * parse data from xml file to dataBase
+     * parse data from xml file to dataBase and save rate and type in database
+     * use {@link com.dovile.convertscurrency.repositories.CurrencyDataRepository}
      */
     void insertDataBase();
 
     /**
-     * update data from xml file it is need
+     * update data from xml file, if condition from checkData() let it
      */
     void updateDataBase();
 
@@ -33,7 +36,7 @@ public interface CurrencyDataService {
      * @param type1
      * @param type2
      * @param value
-     * @return convert amount, which cliens add by types from to
+     * @return convert amount, which clients add by types: from and to
      */
     BigDecimal calculateCurrent(String type1, String type2, String value);
 }
