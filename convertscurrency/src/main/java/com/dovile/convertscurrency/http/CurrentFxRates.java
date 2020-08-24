@@ -1,6 +1,6 @@
 package com.dovile.convertscurrency.http;
 
-import java.util.HashMap;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -8,9 +8,13 @@ import java.util.Map;
  */
 public abstract class CurrentFxRates {
     /**
+     *
+     * @return InputStream with DocumentBuilderFactory parse the data by tag
+     */
+    abstract InputStream getUrl(String url);
+
+    /**
      * @return just new hashMap, but it can be override and change value
      */
-    public Map<String, String> getData() {
-        return new HashMap<String, String>();
-    }
+    public abstract Map<String, String> getData() ;
 }
