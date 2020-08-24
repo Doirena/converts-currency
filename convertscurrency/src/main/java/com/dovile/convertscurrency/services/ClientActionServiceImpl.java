@@ -19,10 +19,18 @@ public class ClientActionServiceImpl implements ClientActionService {
     @Autowired
     private ClientActionRepository clientActionRepository;
 
-    public void saveClientAction(String from, String to, String currencyAmount, BigDecimal sum){
+    public void saveClientAction(String from, String to, String currencyAmount, BigDecimal sum) {
         logger.info("Create Client action");
         ClientAction clientAction = new ClientAction();
-        clientAction.setAction("From "+from+" to "+to+" change "+ currencyAmount+" GET "+sum.toString());
+        clientAction.setAction("From " + from + " to " + to + " change " + currencyAmount + " GET " + sum);
         clientActionRepository.save(clientAction);
+    }
+
+    //delet this method, just for sure it
+    public ClientAction saveEEE(String from, String to, String currencyAmount, BigDecimal sum) {
+//        logger.info("Create Client action");
+        ClientAction clientAction = new ClientAction();
+        clientAction.setAction("From " + from + " to " + to + " change " + currencyAmount + " GET " + sum);
+        return clientActionRepository.save(clientAction);
     }
 }
