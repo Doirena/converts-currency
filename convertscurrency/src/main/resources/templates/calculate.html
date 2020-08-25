@@ -50,7 +50,7 @@
                 <select class="form-control" id="type_to" name="to">
                     <option th:each="currencyData : ${currencyDatas}"
                             th:value="${currencyData.type}"
-                            th:text="${currencyData.type+''+currencyData.type}"
+                            th:text="${currencyData.type}"
                             th:selected="${currencyData.type} == ${type1}">
                     </option>
                 </select>
