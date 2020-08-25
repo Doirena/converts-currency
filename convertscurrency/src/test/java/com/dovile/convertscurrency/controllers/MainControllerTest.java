@@ -45,7 +45,7 @@ public class MainControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attribute("type", "EUR"))
                 .andExpect(MockMvcResultMatchers.model().attribute("type1", "EUR"))
-                .andExpect(MockMvcResultMatchers.model().attribute("sum", new BigDecimal("1.0000")))
+                .andExpect(MockMvcResultMatchers.model().attribute("sum", new BigDecimal("1")))
                 .andExpect(MockMvcResultMatchers.model().attribute("fieldValue", "1"))
                 .andExpect(MockMvcResultMatchers.view().name("calculate"))
                 .andDo(MockMvcResultHandlers.print());
