@@ -4,11 +4,11 @@
  ## Working with:
  - FRONT-END: Thymeleaf, HTML, jQuery;
  - BACK-END: Spring Boot gradle (Java 8, packaging: jar);
- - Database: MySQL.
+ - Database: H2.
  
   
  ### Project run application
- ##### Create schema:
+ ##### Create schema if You use Mysql:
  ```
  CREATE SCHEMA `converts_currency` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin ;
 ``` 
@@ -44,6 +44,6 @@
 - spring-boot-starter-thymeleaf
 - spring-boot-starter-web
 - spring-boot-devtools
-- mysql-connector-java
+- h2database
 - spring-boot-starter-test
 - validation-api
