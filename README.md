@@ -1,5 +1,6 @@
 # Converts-currency
- Simple currency converts application, where You can get calculate amount by LT Bank for currency exchange rates.
+ Simple currency converts application, where You can get calculate amount by LT Bank for currency exchange rates.  
+ Application link from aws elastic beanstalk cloud: http://currencyconvertthelastassay-env.eba-wxneimqi.us-east-2.elasticbeanstalk.com/currency
  
  ## Working with:
  - FRONT-END: Thymeleaf, HTML, jQuery;
